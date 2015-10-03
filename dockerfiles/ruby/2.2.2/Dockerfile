@@ -1,5 +1,8 @@
 FROM ruby:2.2.2
 
+ENV PORT 5000
+EXPOSE 5000
+
 RUN mkdir /app
 WORKDIR /app
 
