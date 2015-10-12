@@ -1,0 +1,28 @@
+#!/bin/bash
+
+function get_procfile_cmd(){
+  CMD=$(cat $1 | awk '/^web:/' | awk '{for(i=2;i<NF;i++){printf("%s ",$i)}print $NF}')
+  echo "$CMD"
+}
+
+function get_app_name(){
+  APP=$(echo $1 | awk -F'/' '{ print $NF }')
+  echo "$APP"
+}
+
+LANG="python"
+VERSION=2.7.10
+
+# generate Dockerfile
+echo "FROM raspaas/$LANG:$VERSION"  > $1/Dockerfile
+
+# generate docker-compose.yml
+CMD=$(get_procfile_cmd $1/Procfile)
+APP=$(get_app_name $1)
+cat << EOF > $1/docker-compose.yml
+web:
+  image: $2/$APP
+  command: $CMD
+  ports:
+    - 5000
+EOF
